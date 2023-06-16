@@ -65,3 +65,27 @@ func TestGenerate(t *testing.T) {
 		})
 	}
 }
+
+func TestSplitKeys(t *testing.T) {
+	type TC struct {
+		Keys string
+		Want []string
+	}
+
+	for desc, tc := range []TC{
+		{
+			Keys: "",
+			Want: []string{},
+		},
+		{
+			Keys: "a",
+			Want: []string{"a"},
+		},
+		{
+			Keys: "ab",
+			Want: []string{"a", "b"},
+		},
+	} {
+		assert.Equal(t, tc.Want, splitKeys(tc.Keys), desc)
+	}
+}
