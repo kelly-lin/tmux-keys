@@ -20,14 +20,15 @@ func Generate(bindings []Binding) ([]string, error) {
 		for idx, key := range keys {
 			// If we are on the last key we want to bind to the command, otherwise bind
 			// to the key-table.
-			cmd := "switch-client -T" + concatTableNameKey(tableName, key)
+			tableNameWithKey := concatTableNameWithKey(tableName, key)
+			cmd := createTableSwitchCmd(tableNameWithKey)
 			if idx == len(keys)-1 {
 				cmd = binding.Cmd
 			}
 
 			result = append(result, createBindCmd(tableName, key, cmd))
 
-			tableName = concatTableNameKey(tableName, key)
+			tableName = tableNameWithKey
 		}
 	}
 	return result, nil
@@ -42,10 +43,14 @@ func splitKeys(keys string) []string {
 	return result
 }
 
-func createBindCmd(tableName, key, cmd string) string {
-	return fmt.Sprintf("tmux bind-key -T%s %s %s", tableName, key, cmd)
+func createTableSwitchCmd(tableName string) string {
+	return "switch-client -T" + tableName
 }
 
-func concatTableNameKey(tableName, key string) string {
+func concatTableNameWithKey(tableName, key string) string {
 	return tableName + "_" + key
+}
+
+func createBindCmd(tableName, key, cmd string) string {
+	return fmt.Sprintf("tmux bind-key -T%s %s %s", tableName, key, cmd)
 }
