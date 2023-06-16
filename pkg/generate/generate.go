@@ -43,6 +43,7 @@ func splitKeys(keys string) []string {
 	return result
 }
 
+// Tmux command used to switch to the target key-table.
 func createTableSwitchCmd(tableName string) string {
 	return "switch-client -T" + tableName
 }
@@ -51,6 +52,7 @@ func concatTableNameWithKey(tableName, key string) string {
 	return tableName + "_" + key
 }
 
+// Tmux command to set keybinds to a key-table.
 func createBindCmd(tableName, key, cmd string) string {
 	return fmt.Sprintf("tmux bind-key -T%s %s %s", tableName, key, cmd)
 }
