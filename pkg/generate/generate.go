@@ -2,9 +2,7 @@ package generate
 
 import "fmt"
 
-const (
-	PREFIX_TABLE_NAME = "prefix"
-)
+const PREFIX_TABLE_NAME = "prefix"
 
 type Binding struct {
 	TableName string
