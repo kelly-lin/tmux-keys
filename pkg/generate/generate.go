@@ -20,11 +20,12 @@ func Generate(bindings []Binding) ([]string, error) {
 		for idx, key := range keys {
 			// If we are on the last key we want to bind to the command, otherwise bind
 			// to the key-table.
+			cmd := "switch-client -T" + concatTableNameKey(tableName, key)
 			if idx == len(keys)-1 {
-				result = append(result, createBindCmd(tableName, key, binding.Cmd))
-			} else {
-				result = append(result, createBindCmd(tableName, key, "switch-client -T"+concatTableNameKey(tableName, key)))
+				cmd = binding.Cmd
 			}
+
+			result = append(result, createBindCmd(tableName, key, cmd))
 
 			tableName = concatTableNameKey(tableName, key)
 		}
