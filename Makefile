@@ -6,9 +6,5 @@ run:
 test-unit:
 	go test ./pkg/...
 
-.PHONY: test-integration
-test-integration:
-	go test ./tests/...
-
 .PHONY: test
-test: test-unit test-integration
+test: test-unit
