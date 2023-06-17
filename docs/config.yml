@@ -1,0 +1,7 @@
+key_binds:
+  - table_name: prefix
+    bindings:
+      - key: abc
+        cmd: new-window
+      - key: fd
+        cmd: switch client -l
