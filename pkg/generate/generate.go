@@ -5,7 +5,7 @@ import "fmt"
 const PREFIX_TABLE_NAME = "prefix"
 
 type Table struct {
-	Name     string
+	Name     string `yaml:"table_name"`
 	Bindings []Binding
 }
 
