@@ -5,20 +5,30 @@ import (
 	"testing"
 )
 
-func TestGenerate(t *testing.T) {
+func TestCreateTableBindingCmds(t *testing.T) {
 	for desc, tc := range map[string]struct {
-		Bindings []Binding
-		Want     []string
+		Tables []Table
+		Want   []string
 	}{
 		"1 layer binding": {
-			Bindings: []Binding{
-				{TableName: PREFIX_TABLE_NAME, Keys: "f", Cmd: "new-window"},
+			Tables: []Table{
+				{
+					Name: PREFIX_TABLE_NAME,
+					Bindings: []Binding{
+						{Keys: "f", Cmd: "new-window"},
+					},
+				},
 			},
 			Want: []string{"tmux bind-key -Tprefix f new-window"},
 		},
 		"2 layer binding": {
-			Bindings: []Binding{
-				{TableName: PREFIX_TABLE_NAME, Keys: "fd", Cmd: "new-window"},
+			Tables: []Table{
+				{
+					Name: PREFIX_TABLE_NAME,
+					Bindings: []Binding{
+						{Keys: "fd", Cmd: "new-window"},
+					},
+				},
 			},
 			Want: []string{
 				"tmux bind-key -Tprefix f switch-client -Tprefix_f",
@@ -26,8 +36,13 @@ func TestGenerate(t *testing.T) {
 			},
 		},
 		"3 layer binding": {
-			Bindings: []Binding{
-				{TableName: PREFIX_TABLE_NAME, Keys: "fdc", Cmd: "new-window"},
+			Tables: []Table{
+				{
+					Name: PREFIX_TABLE_NAME,
+					Bindings: []Binding{
+						{Keys: "fdc", Cmd: "new-window"},
+					},
+				},
 			},
 			Want: []string{
 				"tmux bind-key -Tprefix f switch-client -Tprefix_f",
@@ -35,10 +50,20 @@ func TestGenerate(t *testing.T) {
 				"tmux bind-key -Tprefix_f_d c new-window",
 			},
 		},
-		"bindings in different tables with the same starting key": {
-			Bindings: []Binding{
-				{TableName: PREFIX_TABLE_NAME, Keys: "fd", Cmd: "list-sessions"},
-				{TableName: "some-other-table-name", Keys: "fd", Cmd: "new-window"},
+		"bindings in different tables with the same starting key should have bindings in unique tables": {
+			Tables: []Table{
+				{
+					Name: PREFIX_TABLE_NAME,
+					Bindings: []Binding{
+						{Keys: "fd", Cmd: "list-sessions"},
+					},
+				},
+				{
+					Name: "some-other-table-name",
+					Bindings: []Binding{
+						{Keys: "fd", Cmd: "new-window"},
+					},
+				},
 			},
 			Want: []string{
 				"tmux bind-key -Tprefix f switch-client -Tprefix_f",
@@ -48,9 +73,17 @@ func TestGenerate(t *testing.T) {
 			},
 		},
 		"multiple tables": {
-			Bindings: []Binding{
-				{TableName: PREFIX_TABLE_NAME, Keys: "f", Cmd: "new-window"},
-				{TableName: "some-other-table-name", Keys: "fd", Cmd: "new-window"},
+			Tables: []Table{
+				{
+					Name:     PREFIX_TABLE_NAME,
+					Bindings: []Binding{{Keys: "f", Cmd: "new-window"}},
+				},
+				{
+					Name: "some-other-table-name",
+					Bindings: []Binding{
+						{Keys: "fd", Cmd: "new-window"},
+					},
+				},
 			},
 			Want: []string{
 				"tmux bind-key -Tprefix f new-window",
@@ -60,8 +93,13 @@ func TestGenerate(t *testing.T) {
 		},
 	} {
 		t.Run(desc, func(t *testing.T) {
-			cmds, _ := Generate(tc.Bindings)
-			assert.Equal(t, tc.Want, cmds)
+			got := []string{}
+			for _, table := range tc.Tables {
+				cmds, _ := createTableBindingCmds(table)
+				got = append(got, cmds...)
+			}
+
+			assert.Equal(t, tc.Want, got)
 		})
 	}
 }

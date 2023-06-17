@@ -4,19 +4,37 @@ import "fmt"
 
 const PREFIX_TABLE_NAME = "prefix"
 
+type Table struct {
+	Name     string
+	Bindings []Binding
+}
+
 type Binding struct {
-	TableName string
-	Keys      string
-	Cmd       string
+	Keys string
+	Cmd  string
+}
+
+func Generate(tables []Table) ([]string, error) {
+	result := []string{}
+
+	for _, table := range tables {
+		cmds, err := createTableBindingCmds(table)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, cmds...)
+	}
+
+	return result, nil
 }
 
 // Generates the tmux commands to set keybinds described by the keytable config.
-func Generate(bindings []Binding) ([]string, error) {
+func createTableBindingCmds(table Table) ([]string, error) {
 	result := []string{}
 
-	for _, binding := range bindings {
+	tableName := table.Name
+	for _, binding := range table.Bindings {
 		keys := splitKeys(binding.Keys)
-		tableName := binding.TableName
 		for idx, key := range keys {
 			// If we are on the last key we want to bind to the command, otherwise bind
 			// to the key-table.
