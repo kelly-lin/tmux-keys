@@ -42,7 +42,15 @@ func main() {
 			fmt.Printf("could not parse config: %s\n", err)
 			os.Exit(1)
 		}
-		fmt.Printf("config: %+v\n", config)
+
+		cmds, err := generate.Generate(config.KeyBinds)
+		if err != nil {
+			fmt.Printf("could not generate keybinds: %s", err)
+			os.Exit(1)
+		}
+		for _, cmd := range cmds {
+			fmt.Println(cmd)
+		}
 
 	default:
 		fmt.Printf("tmux-keys: command not found: %s\n", cmd)
