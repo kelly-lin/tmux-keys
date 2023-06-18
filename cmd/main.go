@@ -59,12 +59,11 @@ func main() {
 }
 
 func print_usage() {
-	println(`tmux-keys
+	fmt.Println(`tmux-keys
 
 Usage: 
         tmux-keys [flags] [command]
 
 Commands:
-        generate        generate keybindings
-`)
+        generate        generate keybindings`)
 }
