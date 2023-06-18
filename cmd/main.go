@@ -53,8 +53,7 @@ func main() {
 		}
 
 	default:
-		fmt.Printf("tmux-keys: command not found: %s\n", cmd)
-		fmt.Println("see \"tmux-keys help\" for usage")
+		fmt.Printf("tmux-keys: command not found: %s\nsee \"tmux-keys help\" for usage\n", cmd)
 		os.Exit(1)
 	}
 }
