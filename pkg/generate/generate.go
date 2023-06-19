@@ -147,13 +147,20 @@ func validateKey(key string) error {
 	}
 
 	isModifierKey := func(key string) bool {
-		if len(key) < 2 {
-			return false
-		}
+    if len(key) == 2 {
+      if key[0] == '^' {
+        return true
+      }
+    }
 
 		key = strings.ToLower(key)
+    if len(key) == 3 {
+      if key[1] == '-' && (key[0] == 'c' || key[0] == 'm' || key[0] == 's') {
+        return true
+      }
+    }
 
-		return key[0] == '^' || key[1] == '-' && (key[0] == 'c' || key[0] == 'm' || key[0] == 's')
+		return false
 	}
 
 	if isFnKey(key) {

@@ -257,4 +257,20 @@ func TestValidateKey(t *testing.T) {
 			assert.NoError(t, validateKey(key))
 		}
 	})
+
+	t.Run("error", func(t *testing.T) {
+		for _, key := range []string{
+			"aa",
+			"c-aa",
+			"m-aa",
+			"s-aa",
+      "-a",
+      " a",
+      "  a",
+      " a ",
+      "$a",
+		} {
+			assert.Error(t, validateKey(key), "key = " + key)
+		}
+	})
 }
