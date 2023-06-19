@@ -1,6 +1,11 @@
 package generate
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+	"strconv"
+	"strings"
+)
 
 const PREFIX_TABLE_NAME = "prefix"
 
@@ -34,7 +39,11 @@ func createTableBindingCmds(table Table) ([]string, error) {
 
 	tableName := table.Name
 	for _, binding := range table.Bindings {
-		keys := splitKeys(binding.Keys)
+		keys, err := splitKeys(binding.Keys)
+		if err != nil {
+			return nil, err
+		}
+
 		for idx, key := range keys {
 			// If we are on the last key we want to bind to the command, otherwise bind
 			// to the key-table.
@@ -53,12 +62,116 @@ func createTableBindingCmds(table Table) ([]string, error) {
 }
 
 // Split keys into separate strings based on tmux binding syntax.
-func splitKeys(keys string) []string {
-	result := []string{}
-	for _, key := range keys {
-		result = append(result, string(key))
+// The following should be single keys: x (case sensitive), C-x, M-x, [digit], symbols and
+// quotation marks, F[1-13], special keys (Up, Down, Left, Right, Space) - case
+// insensitive.
+func splitKeys(keys string) ([]string, error) {
+	if keys == "" {
+		return []string{}, errors.New("keys is empty")
 	}
-	return result
+
+	result := []string{}
+
+	current := ""
+	items := strings.Split(keys, " ")
+	for _, item := range items {
+
+		current += item
+
+		if err := validateKey(current); err != nil {
+			return []string{}, err
+		}
+
+		if current == `'` {
+			current = `"'"`
+		}
+
+		if current == `"` {
+			current = `'"'`
+		}
+
+		result = append(result, current)
+		current = ""
+	}
+
+	return result, nil
+}
+
+func validateKey(key string) error {
+	isFnKey := func(key string) bool {
+		key = strings.ToLower(key)
+		return key[0] == 'f' && len(key) > 1
+	}
+
+	isValidFnKey := func(key string) bool {
+		asInt, err := strconv.Atoi(key[1:])
+		if err != nil {
+			return false
+		}
+
+		if asInt > 12 || asInt == 0 {
+			return false
+		}
+
+		return true
+	}
+
+	isSpecialKey := func(key string) bool {
+		key = strings.ToLower(key)
+		specialKeys := map[string]bool{
+			"up":       true,
+			"down":     true,
+			"left":     true,
+			"right":    true,
+			"bspace":   true,
+			"btab":     true,
+			"dc":       true,
+			"delete":   true,
+			"end":      true,
+			"enter":    true,
+			"escape":   true,
+			"home":     true,
+			"ic":       true,
+			"insert":   true,
+			"npage":    true,
+			"pagedown": true,
+			"pgdn":     true,
+			"ppage":    true,
+			"pageup":   true,
+			"pgup":     true,
+			"space":    true,
+			"tab":      true,
+		}
+		_, ok := specialKeys[key]
+		return ok
+	}
+
+	isModifierKey := func(key string) bool {
+		if len(key) < 2 {
+			return false
+		}
+
+		key = strings.ToLower(key)
+
+		return key[0] == '^' || key[1] == '-' && (key[0] == 'c' || key[0] == 'm' || key[0] == 's')
+	}
+
+	if isFnKey(key) {
+		if !isValidFnKey(key) {
+			return fmt.Errorf("%q is not a supported key function key, supported function keys are F1 to F12", key)
+		}
+		return nil
+	}
+
+	if isModifierKey(key) {
+		return nil
+	}
+
+	if !isSpecialKey(key) && len(key) > 1 {
+		return fmt.Errorf("%q is not a supported special key, see tmux manual for reference", key)
+	}
+
+	return nil
 }
 
 // Tmux command used to switch to the target key-table.
