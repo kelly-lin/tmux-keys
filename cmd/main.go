@@ -10,6 +10,7 @@ import (
 
 const (
 	GENERATE_CMD = "generate"
+	HELP_CMD     = "help"
 )
 
 type Config struct {
@@ -51,6 +52,9 @@ func main() {
 		for _, cmd := range cmds {
 			fmt.Println(cmd)
 		}
+
+  case HELP_CMD:
+    print_usage()
 
 	default:
 		fmt.Printf("tmux-keys: command not found: %s\nsee \"tmux-keys help\" for usage\n", cmd)
