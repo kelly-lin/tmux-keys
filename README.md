@@ -33,7 +33,7 @@ run-shell 'command -v tmux-keys &>/dev/null && tmux-keys bind path/to/tmux-keys.
 
 ## Configuration
 
-You can configure your keybindings by declaring them in a `tmux-keys.yml` file,
+You configure your keybindings by declaring them in a `tmux-keys.yml` file,
 see below example configuration.
 
 ```yaml
