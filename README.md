@@ -5,7 +5,8 @@ tmux keybindings declaratively in a `YAML` file.
 
 ## Dependencies
 
-- `Go`
+- [`go`](https://go.dev/)
+- [`tmux`](https://github.com/tmux/tmux/wiki)
 
 ## Install
 
@@ -14,7 +15,7 @@ tmux keybindings declaratively in a `YAML` file.
 ## Usage
 
 1. Configure `tmux-keys.yml` (see [configuration](#configuration)) and place it
-in the default config directory (`$HOME/.config/tmux-keys/tmux-keys.yml`)
+in the default config directory `$HOME/.config/tmux-keys/tmux-keys.yml`
 or any other directory that you choose.
 2. Generate and source the keybindings in `tmux.conf` by adding in the following
 command:
