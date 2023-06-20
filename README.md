@@ -10,7 +10,7 @@ tmux keybindings declaratively in a `YAML` file.
 
 ## Install
 
-`go install github.com/kelly-lin/tmux-keys`
+`go install github.com/kelly-lin/tmux-keys/cmd/tmux-keys`
 
 ## Usage
 
