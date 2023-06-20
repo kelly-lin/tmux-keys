@@ -75,6 +75,6 @@ Usage:
         tmux-keys <command> [arguments]
 
 Commands:
-        bind [config]     set keybindings declared in 'config' if provided, otherwise it will 
+        bind [config]     set keybindings declared in 'config' if otherwise it will 
                           default to $HOME/.config/tmux-keys/tmux-keys.yml`)
 }
