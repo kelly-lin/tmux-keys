@@ -1,7 +1,16 @@
 # tmux-keys
 
 `tmux-keys` enables configuring single and chord (a sequence of keys)
-tmux keybindings declaratively in a `YAML` file.
+tmux keybindings declaratively in a `YAML` file. The configuration below will
+open a new window by pressing the keys: `prefix` -> `n` -> `w`.
+
+```yaml
+key_binds:
+  - table_name: prefix # this binds the keys to the prefix table
+    bindings: # begin binding declaration
+      - keys: n w # the key sequence: prefix -> n -> w
+        cmd: new-window # open a new window (this can be any tmux command)
+```
 
 ## Dependencies
 
@@ -52,3 +61,18 @@ key_binds:
       - keys: s v # this means that this binding can be accessed by prefix -> z -> s -> v
         cmd: split-window
 ```
+
+### Configuration Structure
+
+The root key in the configuration file is `key_binds` which contains a list of
+`table`.
+
+Each `table` has a name `table_name` and a list of `binding` stored in
+the `bindings` key. The `table_name` is the `tmux` `key-table` (see `man tmux`).
+Most of the time, you will be wanting to be binding to the default `tmux`
+`key-table`'s, `prefix` and `root`. If you want to bind to a custom table, you
+can declare them in the config.
+
+Each `binding` has the fields `keys` and `cmd`. `keys` takes a space separated
+string which each component describes each key to be pressed to activate the
+binding and `cmd` is any `tmux` command.
