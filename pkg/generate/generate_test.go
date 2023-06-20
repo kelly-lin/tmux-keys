@@ -52,6 +52,23 @@ func TestCreateTableBindingCmds(t *testing.T) {
 				"tmux bind-key -Tprefix_f_d c new-window",
 			},
 		},
+    "bindings in the same table should map to the correct key tables": {
+      Tables: []Table{
+        {
+          Name: PREFIX_TABLE_NAME,
+          Bindings: []Binding{
+						{Keys: "n w", Cmd: "new-window"},
+						{Keys: "s w", Cmd: "split-window"},
+          },
+        },
+      },
+      Want: []string{
+        "tmux bind-key -Tprefix n switch-client -Tprefix_n",
+        "tmux bind-key -Tprefix_n w new-window",
+        "tmux bind-key -Tprefix s switch-client -Tprefix_s",
+        "tmux bind-key -Tprefix_s w split-window",
+      },
+    },
 		"bindings in different tables with the same starting key should have bindings in unique tables": {
 			Tables: []Table{
 				{
@@ -95,11 +112,10 @@ func TestCreateTableBindingCmds(t *testing.T) {
 		},
 	} {
 		t.Run(desc, func(t *testing.T) {
-			got := []string{}
-			for _, table := range tc.Tables {
-				cmds, _ := createTableBindingCmds(table)
-				got = append(got, cmds...)
-			}
+      got, err := Generate(tc.Tables)
+      if err != nil {
+        t.Errorf("wanted no error but got one: %s", err)
+      }
 
 			assert.Equal(t, tc.Want, got)
 		})

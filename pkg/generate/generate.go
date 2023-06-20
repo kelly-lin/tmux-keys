@@ -57,6 +57,8 @@ func createTableBindingCmds(table Table) ([]string, error) {
 
 			tableName = tableNameWithKey
 		}
+
+    tableName = table.Name
 	}
 	return result, nil
 }
