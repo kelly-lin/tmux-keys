@@ -1,6 +1,9 @@
 package main
 
 import (
+	"os/exec"
+	"path"
+
 	"github.com/kelly-lin/tmux-keys/pkg/generate"
 	"gopkg.in/yaml.v3"
 
@@ -9,8 +12,8 @@ import (
 )
 
 const (
-	GENERATE_CMD = "generate"
-	HELP_CMD     = "help"
+	BIND_CMD = "bind"
+	HELP_CMD = "help"
 )
 
 type Config struct {
@@ -25,13 +28,12 @@ func main() {
 
 	cmd := os.Args[1]
 	switch cmd {
-	case GENERATE_CMD:
-		if len(os.Args) < 3 {
-			fmt.Println("please provide config file")
-			os.Exit(1)
+	case BIND_CMD:
+		configFilePath := path.Join(os.Getenv("HOME"), ".config/tmux-keys/tmux-keys.yml")
+		if len(os.Args) > 2 {
+			configFilePath = os.Args[2]
 		}
 
-		configFilePath := os.Args[2]
 		contents, err := os.ReadFile(configFilePath)
 		if err != nil {
 			fmt.Println("could not read config file")
@@ -49,12 +51,16 @@ func main() {
 			fmt.Printf("could not generate keybinds: %s", err)
 			os.Exit(1)
 		}
+
 		for _, cmd := range cmds {
-			fmt.Println(cmd)
+			err := exec.Command("/bin/sh", "-c", cmd).Run()
+			if err != nil {
+				fmt.Printf("error while executing command: %s\n", err)
+			}
 		}
 
-  case HELP_CMD:
-    print_usage()
+	case HELP_CMD:
+		print_usage()
 
 	default:
 		fmt.Printf("tmux-keys: command not found: %s\nsee \"tmux-keys help\" for usage\n", cmd)
@@ -66,8 +72,8 @@ func print_usage() {
 	fmt.Println(`tmux-keys
 
 Usage: 
-        tmux-keys [flags] [command]
+        tmux-keys <command> [arguments]
 
 Commands:
-        generate        generate keybindings`)
+        bind [file]        set keybindings declared in 'file'`)
 }
