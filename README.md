@@ -75,4 +75,4 @@ can declare them in the config.
 
 Each `binding` has the fields `keys` and `cmd`. `keys` takes a space separated
 string which each component describes each key to be pressed to activate the
-binding and `cmd` is any `tmux` command.
+binding described in `tmux` keybinding syntax and `cmd` is any `tmux` command.
