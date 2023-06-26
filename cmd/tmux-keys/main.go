@@ -4,7 +4,7 @@ import (
 	"os/exec"
 	"path"
 
-	"github.com/kelly-lin/tmux-keys"
+	"github.com/kelly-lin/tmux-keys/generate"
 	"gopkg.in/yaml.v3"
 
 	"fmt"
